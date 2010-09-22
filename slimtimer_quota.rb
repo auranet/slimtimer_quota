@@ -14,7 +14,8 @@ def check_quotas(quotas, entries, args={})
   args = defaults.merge(args)
 
   quotas.each do |task, quota_seconds|
-    task_entries = entries.find_all{|e| e.task.name == task}
+    pattern = Regexp.new(task)
+    task_entries = entries.find_all{|e| e.task.name =~ pattern}
     total_seconds = task_entries.inject(0){|total, e| total += e.duration_in_seconds}
     if args[:report_mode]
       puts "#{task}: #{total_seconds / 3600.0} of #{quota_seconds / 3600.0}"
