@@ -22,8 +22,8 @@ def check_quotas(quotas, entries, args={})
     else
       if total_seconds > quota_seconds
         puts "Quota exceeded for '#{task}'! #{total_seconds / 3600.0} > #{quota_seconds / 3600.0}"
-      elsif total_seconds > quota_seconds - soft_limit
-        puts "Quota soft limit (#{soft_limit / 3600.0}) exceeded for '#{task}'! #{total_seconds / 3600.0} > #{quota_seconds / 3600.0}"
+      elsif total_seconds > quota_seconds - args[:soft_limit]
+        puts "Quota soft limit (#{args[:soft_limit]} / 3600.0}) exceeded for '#{task}'! #{total_seconds / 3600.0} > #{quota_seconds / 3600.0}"
       end
     end
   end
