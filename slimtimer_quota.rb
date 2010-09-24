@@ -49,12 +49,12 @@ def parse_args
       options[:key] = key
     end
 
-    opts.on("-q", "--month-quota QUOTA", "task_name:hours") do |quota|
+    opts.on("-Q", "--month-quota QUOTA", "task_name:hours") do |quota|
       task, hours = quota.split(':')
       options[:month_quotas][task] = hours.to_f * 60 * 60
     end
 
-    opts.on("-Q", "--half-month-quota QUOTA", "task_name:hours") do |quota|
+    opts.on("-q", "--half-month-quota QUOTA", "task_name:hours") do |quota|
       task, hours = quota.split(':')
       options[:half_month_quotas][task] = hours.to_f * 60 * 60
     end

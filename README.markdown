@@ -7,8 +7,8 @@ Usage
         -u, --user EMAIL                 Email/username on slimtimer
         -p, --passwd PASSWD              Password on slimtimer
         -k, --api-key KEY                API key on slimtimer
-        -q, --month-quota QUOTA          task_name:hours
-        -Q, --half-month-quota QUOTA     task_name:hours
+        -Q, --month-quota QUOTA          task_name:hours
+        -q, --half-month-quota QUOTA     task_name:hours
         -r, --report-mode                Print current times and quotas
 
 Example
