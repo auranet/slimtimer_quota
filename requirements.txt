@@ -1,0 +1,2 @@
+lxml==2.2.3
+mechanize==0.1.10
