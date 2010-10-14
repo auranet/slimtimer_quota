@@ -20,6 +20,9 @@ Usage
       -q HALF_MONTH_QUOTAS, --half-month-quota=HALF_MONTH_QUOTAS
                             task_name:hours
       -r, --report-mode     Print current times and quotas
+      -t THRESHOLD, --threshold=THRESHOLD
+                            Number of hours within quota to warn
+
 
 Example
 =======
