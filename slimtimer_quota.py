@@ -86,7 +86,7 @@ def check_quotas(options):
         results = []
         for quota_def in options.half_month_quotas:
             task, quota_hours, total_hours = get_report(quota_def, quotas)
-            if options.report_mode or total_hours > quota_hours:
+            if options.report_mode or total_hours + options.threshold > quota_hours:
                 results.append((task, quota_hours, total_hours))
         print_results("Half month quotas", results)
 
@@ -95,7 +95,7 @@ def check_quotas(options):
         results = []
         for quota_def in options.month_quotas:
             task, quota_hours, total_hours = get_report(quota_def, quotas)
-            if options.report_mode or total_hours > quota_hours:
+            if options.report_mode or total_hours + options.threshold > quota_hours:
                 results.append((task, quota_hours, total_hours))
         print_results("Month quotas", results)
 
@@ -125,10 +125,14 @@ def main():
         default=[], action='append', help="task_name:hours")
     parser.add_option("-r", "--report-mode", dest='report_mode',
         action='store_true', help="Print current times and quotas")
+    parser.add_option("-t", "--threshold", dest='threshold',
+        default='2', help="Number of hours within quota to warn")
     options, args = parser.parse_args()
 
     if not (options.user and options.password):
         parser.error("Need a email and password to login to slimtimer")
+
+    options.threshold = float(options.threshold)
 
     check_quotas(options)
 
