@@ -3,7 +3,7 @@ Utility script for checking slimtimer hours
 Installing requirements
 =======================
 
-    pip install -r requirements.txt
+    pip install -r requirements.txt # you may need to do this as root/sudo
 
 Usage
 =====
