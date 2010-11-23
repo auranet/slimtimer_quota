@@ -46,12 +46,15 @@ class SlimtimerSpider(object):
             'start_date': '9/17/2010',
             'end_date': '9/24/2010',
             'daterange': 'custom_range',
-            'users': '',
-            'user': 'all',
+            'user_ids': '',
+            'users': 'all',
             'task_tags': '',
             'tasks': '',
             'task': 'all',
             'run_report': 'Run Report',
+            'user[report_rounding_target]': 'total',
+            'user[report_rounding_in_seconds]': '360',
+            'user[report_minimum_entry_duration]': '',
         }
         params.update(kwargs)
         for date_arg in ('start_date', 'end_date'):
