@@ -48,7 +48,7 @@ class SlimtimerSpider(object):
         self.login()
 
     def login(self):
-        self.logger.debug('Logging in as {}'.format(self.username))
+        self.logger.debug('Logging in as {0}'.format(self.username))
         self.br.open('http://slimtimer.com/')
         self.br.select_form(nr=0)
         self.br['user[email]'] = self.username
@@ -60,7 +60,7 @@ class SlimtimerSpider(object):
         # 123423=1|12312=1|
         if isinstance(kwargs['user_ids'], list):
             kwargs['user_ids'] = '|'.join(
-                ["{}=1".format(id) for id in kwargs['user_ids']])
+                ["{0}=1".format(id) for id in kwargs['user_ids']])
 
         params = {}
 
@@ -144,7 +144,8 @@ def main():
 
     logging.info('Retriving users from Slimtimer')
     users = ss.get_users(start_date=start_date, end_date=end_date)
-    logging.info('Found {} users'.format(len(users)))
+    logging.info('Found {0} users'.format(len(users)))
+    logging.debug(str(users))
     for user in users:
         logging.info(
             'Retriving time entries for {id} ({label})'.format(**user))
