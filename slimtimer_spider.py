@@ -2,16 +2,19 @@
 
 import calendar
 import csv
+import json
 import logging
 import logging.config
 import re
-import simplejson
 from ConfigParser import ConfigParser
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from lxml.html import document_fromstring
 from mechanize import Browser
 from optparse import OptionParser
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from urllib import urlencode
+from models import TimeEntry
 
 DEFAULT_PARAMS = {
     'row': 'task',
@@ -96,8 +99,8 @@ class SlimtimerSpider(object):
             urlencode(DEFAULT_PARAMS))
         js = response.read()
         data = js.split(' = ')[-1]
-        json = data.replace('id', '"id"').replace('label', '"label"')
-        users = simplejson.loads(json)
+        proper_json = data.replace('id', '"id"').replace('label', '"label"')
+        users = json.loads(proper_json)
         return users
 
 def main():
@@ -112,10 +115,25 @@ def main():
     logging.config.fileConfig(options.config_file)
     config = ConfigParser()
     config.read(options.config_file)
+
+    engine = create_engine(config.get('database', 'conn_string'))
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    TimeEntry.metadata.bind = engine # Gotta do this to create tables
+    TimeEntry.metadata.create_all() # Create tables
+
+    end_date = date.today()
+    start_date = end_date - timedelta(
+        days=int(config.get('slimtimer', 'cutoff')))
+    start_time = datetime.combine(start_date, time(0, 0))
+
+    session.query(TimeEntry).filter(TimeEntry.start >= start_time).delete()
+
     ss = SlimtimerSpider(
         config.get('slimtimer', 'user'),
         config.get('slimtimer', 'password'),
     )
+
     logging.info('Retriving users from Slimtimer')
     users = ss.get_users()
     logging.info('Found {} users'.format(len(users)))
@@ -123,9 +141,20 @@ def main():
         logging.info(
             'Retriving time entries for {id} ({label})'.format(**user))
         for entry in ss.get_report(user_ids=[user['id']],
-            start_date=(date.today() - timedelta(days=1)),
-            end_date=date.today()):
+            start_date=start_date, end_date=end_date):
             logging.debug(str(entry))
+            start = datetime.strptime('{Date} {Start}'.format(**entry),
+              '%m/%d/%Y %I:%M %p')
+            time_entry = TimeEntry(
+                user_id = user['id'],
+                task = entry['Task'],
+                comment = entry['Comments'],
+                start = start,
+                duration = float(entry['Duration']),
+            )
+            session.add(time_entry)
+
+    session.commit()
 
 if __name__ == '__main__':
     main()
