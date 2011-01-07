@@ -66,10 +66,7 @@ class SlimtimerSpider(object):
 
         params.update(DEFAULT_PARAMS)
         params.update(kwargs)
-        for date_arg in ('start_date', 'end_date'):
-            # date, time, datetime?
-            if hasattr(params[date_arg], 'strftime'):
-                params[date_arg] = params[date_arg].strftime('%m/%d/%Y')
+        fix_dates(params)
         report_url = 'http://slimtimer.com/report/run'
         self.br.open(report_url, urlencode(params))
         js = self.br.response().read()
@@ -91,17 +88,28 @@ class SlimtimerSpider(object):
                 break
             yield dict(zip(headers, row))
 
-    def get_users(self):
+    def get_users(self, **kwargs):
         """Get a dictionary of Slimtimer ids and usernames"""
 
+        params = {}
+        params.update(DEFAULT_PARAMS)
+        params.update(kwargs)
+        fix_dates(params)
         response = self.br.open(
             'http://slimtimer.com/report/update_users_filter',
-            urlencode(DEFAULT_PARAMS))
+            urlencode(params))
         js = response.read()
         data = js.split(' = ')[-1]
         proper_json = data.replace('id', '"id"').replace('label', '"label"')
         users = json.loads(proper_json)
         return users
+
+def fix_dates(params):
+    for date_arg in ('start_date', 'end_date'):
+        # date, time, datetime?
+        if hasattr(params[date_arg], 'strftime'):
+            params[date_arg] = params[date_arg].strftime('%m/%d/%Y')
+    return params
 
 def main():
     parser = OptionParser('usage: %prog -f config.conf')
@@ -135,7 +143,7 @@ def main():
     )
 
     logging.info('Retriving users from Slimtimer')
-    users = ss.get_users()
+    users = ss.get_users(start_date=start_date, end_date=end_date)
     logging.info('Found {} users'.format(len(users)))
     for user in users:
         logging.info(
