@@ -3,6 +3,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import DateTime, Integer, Numeric, String
 Base = declarative_base()
 
+class SlimtimerUser(Base):
+    __tablename__ = 'slimtimer_users'
+    id = Column(Integer, primary_key=True)
+    label = Column(String(255))
+
 class TimeEntry(Base):
     __tablename__ = 'time_entries'
     id = Column(Integer, primary_key=True)

@@ -14,7 +14,7 @@ from optparse import OptionParser
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from urllib import urlencode
-from models import TimeEntry
+from models import SlimtimerUser, TimeEntry
 
 DEFAULT_PARAMS = {
     'row': 'task',
@@ -127,7 +127,9 @@ def main():
     engine = create_engine(config.get('database', 'conn_string'))
     Session = sessionmaker(bind=engine)
     session = Session()
+    SlimtimerUser.metadata.bind = engine # Gotta do this to create tables
     TimeEntry.metadata.bind = engine # Gotta do this to create tables
+    SlimtimerUser.metadata.create_all() # Create tables
     TimeEntry.metadata.create_all() # Create tables
 
     end_date = date.today()
@@ -147,6 +149,14 @@ def main():
     logging.info('Found {0} users'.format(len(users)))
     logging.debug(str(users))
     for user in users:
+        slimtimer_user = session.query(SlimtimerUser).filter_by(
+            id=user['id']).first()
+        if not slimtimer_user:
+            logging.info(
+                'Adding SlimtimerUser for {id} ({label})'.format(**user))
+            slimtimer_user = SlimtimerUser(id=user['id'])
+        slimtimer_user.label = user['label']
+        session.add(slimtimer_user)
         logging.info(
             'Retriving time entries for {id} ({label})'.format(**user))
         for entry in ss.get_report(user_ids=[user['id']],
