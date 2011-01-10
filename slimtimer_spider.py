@@ -11,10 +11,8 @@ from datetime import date, datetime, time, timedelta
 from lxml.html import document_fromstring
 from mechanize import Browser
 from optparse import OptionParser
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from urllib import urlencode
-from models import SlimtimerUser, TimeEntry
+from models import SlimtimerUser, TimeEntry, get_session
 
 DEFAULT_PARAMS = {
     'row': 'task',
@@ -124,13 +122,7 @@ def main():
     config = ConfigParser()
     config.read(options.config_file)
 
-    engine = create_engine(config.get('database', 'conn_string'))
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    SlimtimerUser.metadata.bind = engine # Gotta do this to create tables
-    TimeEntry.metadata.bind = engine # Gotta do this to create tables
-    SlimtimerUser.metadata.create_all() # Create tables
-    TimeEntry.metadata.create_all() # Create tables
+    session = get_session(config)
 
     end_date = date.today()
     start_date = end_date - timedelta(
