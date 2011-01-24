@@ -22,6 +22,8 @@ def check_quotas(config, report_mode=False):
             TimeEntry.start <= quota['end'])
         quota['total'] = sum([entry.duration for entry in entries
             if quota['regex'].search(entry.task)])
+        # Unpredictable arithmetic in 2.6, if not cast to float
+        quota['total'] = float(quota['total'])
         if report_mode or quota['total'] + quota['threshold'] > quota['hours']:
             results.append((name[6:], quota))
     if results:
