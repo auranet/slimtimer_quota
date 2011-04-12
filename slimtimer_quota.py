@@ -18,8 +18,8 @@ def check_quotas(config, report_mode=False):
     results = []
     for name, quota in quotas.iteritems():
         entries = session.query(TimeEntry).filter(
-            TimeEntry.start >= quota['start']).filter(
-            TimeEntry.start <= quota['end'])
+            TimeEntry.start_dt >= quota['start']).filter(
+            TimeEntry.start_dt <= quota['end'])
         quota['total'] = sum([entry.duration for entry in entries
             if quota['regex'].search(entry.task)])
         # Unpredictable arithmetic in 2.6, if not cast to float

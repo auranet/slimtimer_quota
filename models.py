@@ -14,7 +14,7 @@ class TimeEntry(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     task = Column(String(50))
-    start = Column(DateTime)
+    start_dt = Column(DateTime)
     duration = Column(Numeric)
     comment = Column(String(1024))
 

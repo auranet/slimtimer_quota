@@ -128,7 +128,7 @@ def main():
         days=int(config.get('slimtimer', 'cutoff')))
     start_time = datetime.combine(start_date, time(0, 0))
 
-    session.query(TimeEntry).filter(TimeEntry.start >= start_time).delete()
+    session.query(TimeEntry).filter(TimeEntry.start_dt >= start_time).delete()
 
     ss = SlimtimerSpider(
         config.get('slimtimer', 'user'),
@@ -153,13 +153,13 @@ def main():
         for entry in ss.get_report(user_ids=[user['id']],
             start_date=start_date, end_date=end_date):
             logging.debug(str(entry))
-            start = datetime.strptime('{Date} {Start}'.format(**entry),
+            start_dt = datetime.strptime('{Date} {Start}'.format(**entry),
               '%m/%d/%Y %I:%M %p')
             time_entry = TimeEntry(
                 user_id = user['id'],
                 task = entry['Task'],
                 comment = entry['Comments'],
-                start = start,
+                start_dt = start_dt,
                 duration = float(entry['Duration']),
             )
             session.add(time_entry)
