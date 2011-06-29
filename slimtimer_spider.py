@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import csv
+import fcntl
 import json
 import logging
 import logging.config
@@ -125,16 +126,19 @@ def main():
 
     # Check for running instance
     pidpath = config.get('spider', 'pidfile')
-    if os.path.isfile(pidpath):
+    lockpath = config.get('spider', 'lockfile')
+    try:
+        lockfile = open(lockpath, 'w')
+        fcntl.lockf(lockfile, fcntl.LOCK_EX|fcntl.LOCK_NB)
+    except IOError:
         pidfile = open(pidpath)
         pid = pidfile.read()
         pidfile.close()
         print "Slimtimer Spider already running (%s)" % pid
         sys.exit(1)
-    else:
-        pidfile = open(pidpath, 'w')
-        pidfile.write(str(os.getpid()))
-        pidfile.close()
+    pidfile = open(pidpath, 'w')
+    pidfile.write(str(os.getpid()))
+    pidfile.close()
 
     session = get_session(config)
 
@@ -180,7 +184,6 @@ def main():
             session.add(time_entry)
 
     session.commit()
-    os.unlink(pidpath)
 
 if __name__ == '__main__':
     main()
