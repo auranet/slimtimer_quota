@@ -4,7 +4,9 @@ import csv
 import json
 import logging
 import logging.config
+import os
 import re
+import sys
 from ConfigParser import ConfigParser
 from datetime import date, datetime, time, timedelta
 from lxml.html import document_fromstring
@@ -121,6 +123,19 @@ def main():
     config = ConfigParser()
     config.read(options.config_file)
 
+    # Check for running instance
+    pidpath = config.get('spider', 'pidfile')
+    if os.path.isfile(pidpath):
+        pidfile = open(pidpath)
+        pid = pidfile.read()
+        pidfile.close()
+        print "Slimtimer Spider already running (%s)" % pid
+        sys.exit(1)
+    else:
+        pidfile = open(pidpath, 'w')
+        pidfile.write(str(os.getpid()))
+        pidfile.close()
+
     session = get_session(config)
 
     end_date = date.today()
@@ -165,6 +180,7 @@ def main():
             session.add(time_entry)
 
     session.commit()
+    os.unlink(pidpath)
 
 if __name__ == '__main__':
     main()
