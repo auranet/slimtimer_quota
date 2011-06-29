@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 import logging.config
 import re
@@ -47,6 +49,8 @@ def main():
         print 'Time This Month:'
         print
         print_user_totals(session, grouped_entries)
+        print
+        print
 
 def group_entries(entries):
     grouped_entries = defaultdict(list)
