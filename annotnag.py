@@ -31,8 +31,10 @@ def main():
         or_(TimeEntry.comment == None, TimeEntry.comment == '')).filter(
         TimeEntry.start_dt >= today).filter(
         TimeEntry.start_dt <= (today + timedelta(days=1)))
-    if entries:
-        grouped_entries = group_entries(entries)
+
+    grouped_entries = group_entries(entries)
+
+    if grouped_entries:
         print 'Following Non-Aura entries require annotations:'
         print_alerts(session, grouped_entries)
 
