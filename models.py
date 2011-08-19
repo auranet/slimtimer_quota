@@ -8,6 +8,7 @@ class SlimtimerUser(Base):
     __tablename__ = 'slimtimer_users'
     id = Column(Integer, primary_key=True)
     label = Column(String(255))
+    email = Column(String(255))
 
 class TimeEntry(Base):
     __tablename__ = 'time_entries'
