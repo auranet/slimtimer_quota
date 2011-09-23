@@ -31,7 +31,7 @@ def main():
 
         # Print today's totals
         entries = session.query(TimeEntry).filter(
-            TimeEntry.task == task).filter(
+            TimeEntry.task.op('~')(task)).filter(
             TimeEntry.start_dt >= today).filter(
             TimeEntry.start_dt <= (today + timedelta(days=1)))
         grouped_entries = group_entries(entries)
@@ -42,7 +42,7 @@ def main():
 
         # Print month's totals
         entries = session.query(TimeEntry).filter(
-            TimeEntry.task == task).filter(
+            TimeEntry.task.op('~')(task)).filter(
             TimeEntry.start_dt >= date(today.year, today.month, 1)).filter(
             TimeEntry.start_dt <= (today + timedelta(days=1)))
         grouped_entries = group_entries(entries)
