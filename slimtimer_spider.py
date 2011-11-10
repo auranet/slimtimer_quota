@@ -53,7 +53,10 @@ class SlimtimerSpider(object):
         self.br.select_form(nr=0)
         self.br['user[email]'] = self.username
         self.br['user[password]'] = self.password
-        self.br.submit()
+        response = self.br.submit()
+
+        if 'Login unsuccessful' in response.read():
+            raise Exception('Unable to authenticate to slimtimer!')
 
     def get_report(self, **kwargs):
         # Mutate users_ids list to a string like this
