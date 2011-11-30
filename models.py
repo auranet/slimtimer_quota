@@ -20,7 +20,8 @@ class TimeEntry(Base):
     comment = Column(String(1024))
 
 def get_session(config):
-    engine = create_engine(config.get('database', 'conn_string'))
+    engine = create_engine(config.get('database', 'conn_string'),
+        use_native_unicode=False)
     Session = sessionmaker(bind=engine)
     session = Session()
     SlimtimerUser.metadata.bind = engine # Gotta do this to create tables
