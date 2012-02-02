@@ -150,6 +150,9 @@ def main():
         days=int(config.get('slimtimer', 'cutoff')))
     start_time = datetime.combine(start_date, time(0, 0))
 
+    # These slimtimer entries have no unique ids, so we have to do this a bit
+    # heavy-handedly.  Remove all TimeEntries in the range to make room for the
+    # new ones.
     session.query(TimeEntry).filter(TimeEntry.start_dt >= start_time).delete()
 
     ss = SlimtimerSpider(
@@ -162,14 +165,16 @@ def main():
     logging.info('Found {0} users'.format(len(users)))
     logging.debug(str(users))
     for user in users:
-        slimtimer_user = session.query(SlimtimerUser).filter_by(
-            id=user['id']).first()
-        if not slimtimer_user:
+        slimtimer_user = session.query(SlimtimerUser).get(user['id'])
+        if slimtimer_user:
+            slimtimer_user.label = user['label']
+            slimtimer_user.updated_dt = datetime.utcnow()
+            session.merge(slimtimer_user)
+        else:
             logging.info(
                 'Adding SlimtimerUser for {id} ({label})'.format(**user))
-            slimtimer_user = SlimtimerUser(id=user['id'])
-        slimtimer_user.label = user['label']
-        session.add(slimtimer_user)
+            slimtimer_user = SlimtimerUser(id=user['id'], label=user['label'])
+            session.add(slimtimer_user)
         logging.info(
             'Retriving time entries for {id} ({label})'.format(**user))
         for entry in ss.get_report(user_ids=[user['id']],
