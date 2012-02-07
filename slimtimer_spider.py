@@ -168,7 +168,7 @@ def main():
         slimtimer_user = session.query(SlimtimerUser).get(user['id'])
         if slimtimer_user:
             slimtimer_user.label = user['label']
-            slimtimer_user.updated_dt = datetime.utcnow()
+            slimtimer_user.updated_at = datetime.utcnow()
             session.merge(slimtimer_user)
         else:
             logging.info(

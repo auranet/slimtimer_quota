@@ -10,8 +10,8 @@ class SlimtimerUser(Base):
     id = Column(Integer, primary_key=True)
     label = Column(String(255))
     email = Column(String(255))
-    created_dt = Column(DateTime, default=datetime.utcnow)
-    updated_dt = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
 
 class TimeEntry(Base):
     __tablename__ = 'time_entries'
@@ -21,8 +21,8 @@ class TimeEntry(Base):
     start_dt = Column(DateTime)
     duration = Column(Numeric)
     comment = Column(String(1024))
-    created_dt = Column(DateTime, default=datetime.utcnow)
-    updated_dt = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
 
 def get_session(config):
     engine = create_engine(config.get('database', 'conn_string'),
